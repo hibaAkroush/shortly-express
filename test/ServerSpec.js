@@ -14,7 +14,7 @@ var Link = require('../app/models/link');
 // Remove the 'x' from beforeEach block when working on
 // authentication tests.
 /************************************************************/
-var xbeforeEach = function() {};
+var beforeEach = function() {};
 /************************************************************/
 
 
@@ -53,10 +53,10 @@ describe('', function() {
       .del()
       .catch(function(error) {
         // uncomment when writing authentication tests
-        // throw {
-        //   type: 'DatabaseError',
-        //   message: 'Failed to create test setup data'
-        // };
+        throw {
+          type: 'DatabaseError',
+          message: 'Failed to create test setup data'
+        };
       });
 
     // delete user Phillip from db so it can be created later for the test
@@ -65,10 +65,10 @@ describe('', function() {
       .del()
       .catch(function(error) {
         // uncomment when writing authentication tests
-        // throw {
-        //   type: 'DatabaseError',
-        //   message: 'Failed to create test setup data'
-        // };
+        throw {
+          type: 'DatabaseError',
+          message: 'Failed to create test setup data'
+        };
       });
   });
 
@@ -76,7 +76,7 @@ describe('', function() {
 
     var requestWithSession = request.defaults({jar: true});
 
-    xbeforeEach(function(done) {
+    beforeEach(function(done) {
       // create a user that we can then log-in with
       new User({
         'username': 'Phillip',
@@ -85,7 +85,7 @@ describe('', function() {
         var options = {
           'method': 'POST',
           'followAllRedirects': true,
-          'uri': 'http://127.0.0.1:4568/login',
+          'uri': 'http://127.0.0.1:4568',
           'json': {
             'username': 'Phillip',
             'password': 'Phillip'
@@ -226,32 +226,32 @@ describe('', function() {
 
   }); // 'Link creation'
 
-  xdescribe('Privileged Access:', function() {
+  describe('Privileged Access:', function() {
 
     it('Redirects to login page if a user tries to access the main page and is not signed in', function(done) {
       request('http://127.0.0.1:4568/', function(error, res, body) {
-        expect(res.req.path).to.equal('/login');
+        expect(res.req.path).to.equal('');
         done();
       });
     });
 
     it('Redirects to login page if a user tries to create a link and is not signed in', function(done) {
       request('http://127.0.0.1:4568/create', function(error, res, body) {
-        expect(res.req.path).to.equal('/login');
+        expect(res.req.path).to.equal('');
         done();
       });
     });
 
     it('Redirects to login page if a user tries to see all of the links and is not signed in', function(done) {
       request('http://127.0.0.1:4568/links', function(error, res, body) {
-        expect(res.req.path).to.equal('/login');
+        expect(res.req.path).to.equal('');
         done();
       });
     });
 
   }); // 'Priviledged Access'
 
-  xdescribe('Account Creation:', function() {
+  describe('Account Creation:', function() {
 
     it('Signup creates a user record', function(done) {
       var options = {
@@ -299,7 +299,7 @@ describe('', function() {
 
   }); // 'Account Creation'
 
-  xdescribe('Account Login:', function() {
+  describe('Account Login:', function() {
 
     var requestWithSession = request.defaults({jar: true});
 
@@ -315,7 +315,7 @@ describe('', function() {
     it('Logs in existing users', function(done) {
       var options = {
         'method': 'POST',
-        'uri': 'http://127.0.0.1:4568/login',
+        'uri': 'http://127.0.0.1:4568',
         'json': {
           'username': 'Phillip',
           'password': 'Phillip'
@@ -331,7 +331,7 @@ describe('', function() {
     it('Users that do not exist are kept on login page', function(done) {
       var options = {
         'method': 'POST',
-        'uri': 'http://127.0.0.1:4568/login',
+        'uri': 'http://127.0.0.1:4568',
         'json': {
           'username': 'Fred',
           'password': 'Fred'
@@ -339,7 +339,7 @@ describe('', function() {
       };
 
       requestWithSession(options, function(error, res, body) {
-        expect(res.headers.location).to.equal('/login');
+        expect(res.headers.location).to.equal('');
         done();
       });
     });

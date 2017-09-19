@@ -40,6 +40,8 @@ function(req, res) {
   });
 });
 
+
+
 app.post('/links', 
 function(req, res) {
   var uri = req.body.url;
@@ -50,6 +52,7 @@ function(req, res) {
   }
 
   new Link({ url: uri }).fetch().then(function(found) {
+      console.log(found)
     if (found) {
       res.status(200).send(found.attributes);
     } else {
@@ -67,6 +70,7 @@ function(req, res) {
         .then(function(newLink) {
           res.status(200).send(newLink);
         });
+
       });
     }
   });
@@ -76,7 +80,56 @@ function(req, res) {
 // Write your authentication routes here
 /************************************************************/
 
+// add a function tom redirect the user to a login page
+///login
 
+
+app.get('/login', 
+function(req, res) {
+  res.render('login');
+})
+
+app.post('/login', function(req, res) {
+    
+  var username = req.body.username;
+  var password = req.body.password;
+  // console.log(username,password)
+// if username and password exist redirect to restrected 
+    if(username === 'demo' && password === 'demo'){
+        res.redirect('Link');
+    }
+// if not redirect  to login
+    else {
+       res.redirect('login');
+    } 
+});
+
+//signup
+
+app.get('/signup', 
+function(req, res) {
+  res.render('signup');
+});
+
+// post /sign up
+
+app.post('/signup',
+function(req,res){
+
+
+var newuser = req.body.username;
+var newpass = req.body.password;
+console.log(newpass,newuser) 
+
+  Users.create({
+    username: newuser,
+    password: newpass,
+  })
+  .then(function(){
+  res.status(200).render();
+  });
+
+})
 
 /************************************************************/
 // Handle the wildcard route last - if all other routes fail
