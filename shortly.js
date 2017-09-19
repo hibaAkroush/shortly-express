@@ -22,19 +22,22 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + '/public'));
 
+app.use(session({
+  secret:'shhhh it is a secret',
+  resave:false,
+  saveUninialized: true
 
-app.get('/', 
-function(req, res) {
+}));
+
+app.get('/', util.checkUser,function(req, res) {
   res.render('index');
 });
 
-app.get('/create', 
-function(req, res) {
+app.get('/create', util.checkUser,function(req, res) {
   res.render('index');
 });
 
-app.get('/links', 
-function(req, res) {
+app.get('/links', util.checkUser,function(req, res) {
   Links.reset().fetch().then(function(links) {
     res.status(200).send(links.models);
   });
@@ -42,8 +45,7 @@ function(req, res) {
 
 
 
-app.post('/links', 
-function(req, res) {
+app.post('/links', util.checkUser,function(req, res) {
   var uri = req.body.url;
 
   if (!util.isValidUrl(uri)) {
@@ -93,42 +95,84 @@ app.post('/login', function(req, res) {
     
   var username = req.body.username;
   var password = req.body.password;
-  // console.log(username,password)
-// if username and password exist redirect to restrected 
-    if(username === 'demo' && password === 'demo'){
-        res.redirect('Link');
-    }
-// if not redirect  to login
-    else {
-       res.redirect('login');
-    } 
+  new User ({username:username})
+    .fetch()
+    .then(function(user){
+      if(!user){
+        res.redirect('/login')
+      } else{
+        user.comperPassword(password,function(match){
+          if(match){
+            util.createSession(req,res,user)
+          }else{
+            res.redirect('/login');
+          }
+        });
+      }
+    });
 });
-
-//signup
-
-app.get('/signup', 
-function(req, res) {
-  res.render('signup');
-});
-
-// post /sign up
-
-app.post('/signup',
-function(req,res){
-
-
-var newuser = req.body.username;
-var newpass = req.body.password;
-console.log(newpass,newuser) 
-
-  Users.create({
-    username: newuser,
-    password: newpass,
-  })
-  .then(function(){
-  res.status(200).render();
+app.get('/logout',function(req,res){
+  req.session.destroy(function(){
+    res.redirect('/login');
   });
+});
 
+// // if username and password exist redirect to restrected 
+//     if(username === 'demo' && password === 'demo'){
+//         res.redirect('Link');
+//     }
+// // if not redirect  to login
+//     else {
+//        res.redirect('login');
+//     } 
+// });
+
+// //signup
+
+// app.get('/signup', 
+// function(req, res) {
+//   res.render('signup');
+// });
+
+// // post /sign up
+
+// app.post('/signup',
+// function(req,res){
+
+
+// var newuser = req.body.username;
+// var newpass = req.body.password;
+// console.log(newpass,newuser) 
+
+//   Users.create({
+//     username: newuser,
+//     password: newpass,
+//   })
+//   .then(function(){
+//   res.status(200).render();
+//   });
+
+// })
+app.post('/singup',function(req,res){
+  var username=req.body.username;
+  var password = req.body.password;
+
+  new User({username:username})
+  .fetch()
+  .then(function(user){
+    if(!user){
+      var newUser = new User({
+        username:username,
+        password:password
+      });
+      newUser.save().then(function(savedUser){
+        util.createSession(req,res,savedUser)
+      })
+    }else{
+      console.log('Account Already exist');
+      res.redirect('/signup');
+    }
+  })
 })
 
 /************************************************************/
