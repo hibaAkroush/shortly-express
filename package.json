@@ -16,18 +16,23 @@
     "test:es6": "mocha --compilers js:babel-register --bail --reporter nyan test/ServerSpec.js",
     "lint": "eslint ./"
   },
+    "_requiredBy": [
+    "/",
+    "/backbone"
+  ],
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
     "bluebird": "^3.3.4",
     "body-parser": "^1.15.0",
-    "bookshelf": "^0.9.1",
+    "bookshelf": "^0.9.5",
     "ejs": "^2.4.1",
     "express": "^4.13.4",
     "express-partials": "^0.3.0",
     "express-session": "^1.13.0",
     "knex": "^0.10.0",
     "request": "^2.34.0",
-    "sqlite3": "~3.1.1"
+    "sqlite3": "~3.1.1",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "babel-cli": "^6.7.5",
@@ -35,6 +40,7 @@
     "babel-register": "^6.7.2",
     "chai": "^3.5.0",
     "eslint-config-hackreactor": "git://github.com/reactorcore/eslint-config-hackreactor",
+    "jquery": "^3.1.1",
     "mocha": "^2.4.5"
   },
   "babel": {
